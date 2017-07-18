@@ -35,6 +35,7 @@
     unarchive:
       src: /tmp/nomad.zip
       dest: "{{ nomad_install_path }}/{{ nomad_version }}/"
+      copy: no
     tags:
       - nomad
 
