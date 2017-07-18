@@ -8,7 +8,7 @@ while :; do
   fi
 
   if [ $SECONDS -gt $max_wait ]; then
-    echo "No Consul leader elected in 30 seconds"
+    echo "No Consul leader elected in $max_wait seconds"
     exit 1
   fi
 

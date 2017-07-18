@@ -7,7 +7,7 @@
   become_user: root
   roles:
     - utils
-    - { role: dnsmasq, consul_dns_domain: bramble.local }
+    - { role: dnsmasq, consul_dns_domain: bramble.local, consul_dc: alpha }
   tags:
     - bramble
     - bootstrap
@@ -17,7 +17,7 @@
   gather_facts: true
   remote_user: pi
   roles:
-    - { role: consul, consul_is_server: yes }
+    - { role: consul, consul_is_server: yes, consul_dc: alpha }
   tags:
     - consul
     - consul-servers
@@ -27,6 +27,7 @@
   gather_facts: true
   remote_user: pi
   roles:
+    - { role: consul, consul_dc: alpha }
     - { role: vault, vault_datacenter: alpha }
     - { role: nomad, nomad_is_server: yes, nomad_dc: alpha }
     # - prometheus
@@ -43,7 +44,7 @@
   gather_facts: true
   remote_user: pi
   roles:
-    - consul
+    - { role: consul, consul_is_server: yes, consul_dc: alpha }
     - { role: nomad, nomad_dc: alpha }
   tags:
     - followers

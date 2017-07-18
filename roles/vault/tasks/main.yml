@@ -66,10 +66,15 @@
       src: vault.service
       dest: "{{ systemd_dir }}/vault.service"
       mode: 644
-    notify: reload systemd
     tags:
       - vault
-
+  - name: reload systemd
+    systemd:
+      daemon_reload: yes
+      name: vault.service
+      state: restarted
+    tags:
+      - vault
   - name: configure vault
     copy:
       src: vault.config

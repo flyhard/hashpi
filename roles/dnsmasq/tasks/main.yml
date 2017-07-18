@@ -85,6 +85,7 @@
     - dnsmasq
 
 - name: update hosts file
+  become: yes
   template:
     src: etc/hosts.j2
     dest: /etc/hosts

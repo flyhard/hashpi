@@ -1,7 +1,7 @@
 ---
-nomad_version: "0.5.0"
-nomad_checksum: "sha256:c85d3ddac0dbb9ed594eabada29daa2bf26619d24f304587c9d7e775c99ad6f6"
-nomad_install_path: /usr/local/consul
+nomad_version: "0.5.6"
+nomad_checksum: "sha256:a4fe93f95e4c53b23b8feb2a714565cf97025b2df6669f1a1558fc664fcd4993"
+nomad_install_path: /usr/local/nomad
 nomad_dc: dc1
 nomad_is_server: no
 nomad_leader_group: baron

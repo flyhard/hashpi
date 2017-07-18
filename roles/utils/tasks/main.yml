@@ -8,11 +8,7 @@
     - utils
 
 - apt:
-    name: htop
+    name: htop,dnsutils,telnet,vim
     update_cache: yes
-  with_items:
-    - htop
-    - dnsutils
-    - telnet
   tags:
     - utils

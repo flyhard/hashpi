@@ -32,7 +32,9 @@
       - nomad
 
   - name: decompress archive
-    command: "unzip /tmp/nomad.zip -d {{ nomad_install_path }}/{{ nomad_version }}/"
+    unarchive:
+      src: /tmp/nomad.zip
+      dest: "{{ nomad_install_path }}/{{ nomad_version }}/"
     tags:
       - nomad
 
@@ -80,11 +82,15 @@
     copy:
       src: nomad.service
       dest: "{{ systemd_dir }}/nomad.service"
-    notify:
-      - reload systemd
     tags:
       - nomad
-
+  - name: reload systemd
+    systemd:
+      daemon_reload: yes
+      name: nomad.service
+      state: restarted
+    tags:
+      - nomad
   - name: enable nomad
     service:
       name: nomad

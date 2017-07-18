@@ -11,15 +11,21 @@
     - shell
 
   tasks:
-    - name: stop all the default shit
-      command: "{{ item }}"
+    - name: update system
+      apt:
+        update_cache: yes
+        upgrade: dist
+        cache_valid_time: 86400
+    - name: stop and disable services
+      service:
+        name: "{{item}}"
+        enabled: false
+        state: stopped
       with_items:
-        - apt-get update
-        - apt dist-upgrade -y
-        - systemctl stop avahi-daemon
-        - systemctl disable avahi-daemon
-        - systemctl disable avahi-daemon.socket
-        - systemctl stop bluetooth
-        - systemctl disable bluetooth
-      become: yes
-      become_user: root
+        - avahi-daemon
+        - avahi-daemon.socket
+        - bluetooth
+    - name: set hostname
+      hostname:
+        name: "{{hostvars.hostname}}"
+    
