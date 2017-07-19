@@ -1,0 +1,25 @@
+---
+- block:
+  - name: install docker
+    apt_key:
+      keyserver: hkp://p80.pool.sks-keyservers.net:80
+      id: 58118E89F3A912897C070ADBF76221572C52609D
+  - name: add deb repo
+    apt_repository:
+      repo: "deb https://apt.dockerproject.org/repo raspbian-jessie main"
+      filename: docker.list
+      state: present
+  - name: apt update
+    apt:
+      update_cache: yes
+  - apt:
+      name: docker-engine
+      state: present
+  - name: add user mod
+    user:
+      name: "{{docker_user}}"
+      append: yes
+      groups: docker
+  become: yes
+  tags:
+    docker
