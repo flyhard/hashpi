@@ -25,3 +25,5 @@ consul_cert_file: consul.cert
 consul_key_file: consul.key
 
 consul_do_auth: no
+
+consul_ui_enabled: no
