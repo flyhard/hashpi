@@ -5,6 +5,9 @@ datacenter = "{{ nomad_dc }}"
 name = "{{ ansible_hostname }}.node"
 log_level = "DEBUG"
 enable_debug = true
+{% if nomad_enable_syslog %}
+enable_syslog = true
+{% endif %}
 
 advertise {
   # We need to specify our host's IP because we can't
