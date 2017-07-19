@@ -31,7 +31,10 @@
       - vault
 
   - name: decompress archive
-    command: "unzip /tmp/vault.zip -d {{ vault_install_path }}/{{ vault_version }}/"
+    unarchive:
+      src: /tmp/vault.zip
+      dest: "{{ vault_install_path }}/{{ vault_version }}/"
+      copy: no
     tags:
       - vault
 
