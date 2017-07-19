@@ -17,7 +17,7 @@
   gather_facts: true
   remote_user: pi
   roles:
-    - { role: consul, consul_is_server: yes, consul_dc: alpha }
+    - { role: consul, consul_is_server: yes, consul_dc: alpha, consul_bootstrap_expect: "{{ groups['baron'] | length }}", consul_ui_enabled: yes }
   tags:
     - consul
     - consul-servers
@@ -27,7 +27,6 @@
   gather_facts: true
   remote_user: pi
   roles:
-    - { role: consul, consul_dc: alpha }
     - { role: vault, vault_datacenter: alpha }
     - { role: nomad, nomad_is_server: yes, nomad_dc: alpha }
     # - prometheus
@@ -44,7 +43,8 @@
   gather_facts: true
   remote_user: pi
   roles:
-    - { role: consul, consul_is_server: yes, consul_dc: alpha }
+    - { role: docker }
+    - { role: consul, consul_dc: alpha }
     - { role: nomad, nomad_dc: alpha }
   tags:
     - followers
