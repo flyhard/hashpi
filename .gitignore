@@ -2,3 +2,5 @@
 vault.keys
 *.log
 *.retry
+*.iml
+.idea/
