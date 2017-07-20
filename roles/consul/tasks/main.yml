@@ -7,13 +7,17 @@
   become: no
   run_once: true
   register: consul_checksum
-  tags: installation
+  tags: 
+    - installation
+    - consul
 
 - name: Download package checksum file
   local_action: get_url url="{{ consul_checksum_file_url }}" dest="{{ role_path }}/files/consul_{{ consul_version }}_SHA256SUMS"
   become: no
   run_once: true
-  tags: installation
+  tags: 
+    - installation
+    - consul
   when: not consul_checksum.stat.exists | bool
 
 - name: Read package checksum
@@ -21,104 +25,56 @@
   become: no
   run_once: true
   register: consul_sha256
-  tags: installation
+  tags: 
+    - installation
+    - consul
 
 - name: Check Consul package file
   local_action: stat path="{{ role_path }}/files/{{ consul_pkg }}"
   become: no
   run_once: true
   register: consul_package
-  tags: installation
+  tags: 
+    - installation
+    - consul
 
 - name: Download Consul package
   local_action: get_url url="{{ consul_zip_url }}" dest="{{ role_path }}/files/{{ consul_pkg }}" checksum="sha256:{{ consul_sha256.stdout }}" timeout="42"
   become: no
   run_once: true
-  tags: installation
+  tags: 
+    - installation
+    - consul
   when: not consul_package.stat.exists | bool
 
 - name: Unarchive Consul package
   local_action: unarchive src="{{ role_path }}/files/{{ consul_pkg }}" dest="{{ role_path }}/files/" creates="{{ role_path }}/files/consul"
   become: no
   run_once: true
-  tags: installation
+  tags: 
+    - installation
+    - consul
 
 - name: Install Consul
   copy:
     src: "{{ role_path }}/files/consul"
     dest: "{{ consul_install_path }}/consul"
-    owner: "{{ consul_user }}"
+    owner: "{{ consul_owner }}"
     group: "{{ consul_group }}"
     mode: 0755
-  tags: installation
+  become: yes
+  tags: 
+    - installation
+    - consul
 
 - name: Cleanup
   local_action: file path="{{ item }}" state="absent"
   become: no
   with_fileglob: "{{ role_path }}/files/consul"
   run_once: true
-  tags: installation
-
-- stat:
-    path: "{{ consul_install_path }}/{{ consul_version }}/"
-  register: preexisting
-  tags:
+  tags: 
+    - installation
     - consul
-
-# - debug: var=preexisting
-
-- block:
-
-  - name: download consul
-    get_url:
-      url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_{{consul_arch}}.zip"
-      dest: /tmp/consul.zip
-      mode: 0777
-      checksum: "{{ consul_checksum }}"
-    tags:
-      - consul
-
-  - name: create the install paths
-    file:
-      path: "{{ item }}"
-      state: directory
-      mode: 0755
-    with_items:
-      - "{{ consul_install_path }}/{{ consul_version }}"
-      - /etc/consul
-    tags:
-      - consul
-
-  - name: decompress archive
-    unarchive:
-      src: /tmp/consul.zip
-      dest: "{{ consul_install_path }}/{{ consul_version }}/"
-      copy: no
-    tags:
-      - consul
-
-  - name: link the versioned consul to the local bin
-    file:
-      src: "{{ consul_install_path }}/{{ consul_version }}/consul"
-      dest: /usr/local/bin/consul
-      owner: root
-      group: root
-      state: link
-    tags:
-      - consul
-
-  - name: remove the temp archives
-    file:
-      path: "{{ item }}"
-      state: absent
-    with_items:
-      - /tmp/consul.zip
-    tags:
-      - consul
-
-  become: true
-  become_user: root
-  when: preexisting.stat.exists != true
 
 ###############################################################################
 ################################ CONFIGURE ####################################
@@ -146,7 +102,7 @@
     copy:
       src: "{{ item.src }}"
       dest: "{{ item.dest }}"
-      mode: u=rwx,g=rx,o=rx
+      mode: 0755
     with_items:
       - src: consul-wait-for-leader.sh
         dest: /usr/local/bin
@@ -170,6 +126,13 @@
     tags:
       - consul
 
+  - name: Create config folder
+    file:
+      path: /etc/consul
+      state: directory
+      mode: 0755
+    tags:
+    - consul
   - name: configure consul
     template:
       src: "{{ item.src }}"

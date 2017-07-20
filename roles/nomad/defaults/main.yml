@@ -1,7 +1,20 @@
 ---
-nomad_version: "0.5.6"
-nomad_checksum: "sha256:a4fe93f95e4c53b23b8feb2a714565cf97025b2df6669f1a1558fc664fcd4993"
-nomad_install_path: /usr/local/nomad
+nomad_version: "{{ lookup('env','CONSUL_VERSION') | default('0.5.6', true) }}"
+nomad_architecture_map:
+  # this first entry seems... redundant
+  #(but it's required for reasons)
+  amd64: amd64
+  x86_64: amd64
+  armv7l: arm
+  aarch64: arm64
+nomad_architecture: "{{ nomad_architecture_map[ansible_architecture] }}"
+nomad_os: "{{ ansible_system|lower }}"
+nomad_pkg: "nomad_{{ nomad_version }}_{{ nomad_os }}_{{ nomad_architecture }}.zip"
+nomad_zip_url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_{{ nomad_os }}_{{ nomad_architecture }}.zip"
+nomad_checksum_file_url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version}}_SHA256SUMS"
+nomad_install_path: /usr/local/bin
+nomad_owner: root
+nomad_group: root
 nomad_dc: dc1
 nomad_is_server: no
 nomad_leader_group: baron
