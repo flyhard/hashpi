@@ -12,10 +12,6 @@
 {% if consul_bootstrap_expect > 1 %}
   "retry_join": [ {{ consul_retry_join }} ],
 {% endif %}
-{% if consul_is_server %}
-  "server": true,
-  "bootstrap_expect": {{ consul_bootstrap_expect }},
-{% endif %}
 {% if consul_gossip_key is defined %}
   "encrypt": "{{ consul_gossip_key }}",
 {% endif %}
