@@ -9,6 +9,15 @@
       repo: "deb https://apt.dockerproject.org/repo raspbian-jessie main"
       filename: docker.list
       state: present
+    when: ansible_architecture == 'armv7l'
+
+  - name: add deb repo
+    apt_repository:
+      repo: "deb https://apt.dockerproject.org/repo debian-jessie main"
+      filename: docker.list
+      state: present
+    when: ansible_architecture == 'amd64' || ansible_architecture == 'x86_64'
+
   - name: apt update
     apt:
       update_cache: yes
