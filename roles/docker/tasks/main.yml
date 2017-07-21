@@ -30,5 +30,6 @@
       append: yes
       groups: docker
   become: yes
+  when: ansible_distribution == 'Debian'
   tags:
     docker
