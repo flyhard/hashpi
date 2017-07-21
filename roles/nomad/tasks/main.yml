@@ -59,7 +59,7 @@
   copy:
     src: "{{ role_path }}/files/nomad"
     dest: "{{ nomad_install_path }}/nomad"
-    owner: "{{ nomad_user }}"
+    owner: "{{ nomad_owner }}"
     group: "{{ nomad_group }}"
     mode: 0755
   become: yes

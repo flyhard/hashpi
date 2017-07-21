@@ -6,4 +6,4 @@
   service:
     name: consul
     enabled: yes
-    state: restarted
+    state: reloaded

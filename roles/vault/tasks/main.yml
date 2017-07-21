@@ -2,63 +2,80 @@
 ###############################################################################
 ################################# INSTALL #####################################
 ###############################################################################
-
-- stat:
-    path: "{{ vault_install_path }}/{{ vault_version }}"
-  register: preexisting
+- name: Read package checksum file
+  local_action: stat path="{{ role_path }}/files/vault_{{ vault_version }}_SHA256SUMS"
+  become: no
+  run_once: true
+  register: vault_checksum
   tags:
+    - installation
     - vault
 
-# - debug: var=preexisting
+- name: Download package checksum file
+  local_action: get_url url="{{ vault_checksum_file_url }}" dest="{{ role_path }}/files/vault_{{ vault_version }}_SHA256SUMS" validate_certs=no
+  become: no
+  run_once: true
+  tags:
+    - installation
+    - vault
+  when: not vault_checksum.stat.exists | bool
 
-- block:
+- name: Read package checksum
+  local_action: shell grep "{{ vault_pkg }}" "{{ role_path }}/files/vault_{{ vault_version }}_SHA256SUMS" | awk '{print $1}'
+  become: no
+  run_once: true
+  register: vault_sha256
+  tags:
+    - installation
+    - vault
 
-  - name: download vault
-    get_url:
-      url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_arm.zip"
-      dest: /tmp/vault.zip
-      mode: 0777
-      checksum: "{{ vault_checksum }}"
-    tags:
-      - vault
+- name: Check Vault package file
+  local_action: stat path="{{ role_path }}/files/{{ vault_pkg }}"
+  become: no
+  run_once: true
+  register: vault_package
+  tags:
+    - installation
+    - vault
 
-  - name: create the install path
-    file:
-      path: "{{ vault_install_path }}/{{ vault_version }}/"
-      state: directory
-      mode: 0755
-    tags:
-      - vault
+- name: Download Vault package
+  local_action: get_url url="{{ vault_zip_url }}" dest="{{ role_path }}/files/{{ vault_pkg }}" checksum="sha256:{{ vault_sha256.stdout }}" timeout="42" validate_certs=no
+  become: no
+  run_once: true
+  tags:
+    - installation
+    - vault
+  when: not vault_package.stat.exists | bool
 
-  - name: decompress archive
-    unarchive:
-      src: /tmp/vault.zip
-      dest: "{{ vault_install_path }}/{{ vault_version }}/"
-      copy: no
-    tags:
-      - vault
+- name: Unarchive Vault package
+  local_action: unarchive src="{{ role_path }}/files/{{ vault_pkg }}" dest="{{ role_path }}/files/" creates="{{ role_path }}/files/vault"
+  become: no
+  run_once: true
+  tags:
+    - installation
+    - vault
 
-  - name: remove the tempoary install archive
-    file:
-      path: /tmp/vault.zip
-      state: absent
-    tags:
-      - vault
+- name: Install Vault
+  copy:
+    src: "{{ role_path }}/files/vault"
+    dest: "{{ vault_install_path }}/vault"
+    owner: "{{ vault_owner }}"
+    group: "{{ vault_group }}"
+    mode: 0755
+  become: yes
+  tags:
+    - installation
+    - vault
 
-  - name: link the versioned binary to the local bin
-    file:
-      src: "{{ vault_install_path }}/{{ vault_version }}/vault"
-      dest: /usr/local/bin/vault
-      owner: root
-      group: root
-      state: link
-    tags:
-      - vault
-
-  become: true
-  become_user: root
-  when: preexisting.stat.exists != true
-
+- name: Cleanup
+  local_action: file path="{{ item }}" state="absent"
+  become: no
+  with_fileglob: "{{ role_path }}/files/vault"
+  run_once: true
+  tags:
+    - installation
+    - vault
+    
 ###############################################################################
 ################################ CONFIGURE ####################################
 ###############################################################################
