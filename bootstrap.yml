@@ -7,7 +7,7 @@
   hosts:
     - bramble
   roles:
-    - users
+    - ssh-key
     - shell
 
   tasks:

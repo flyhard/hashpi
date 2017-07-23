@@ -55,12 +55,13 @@
     - consul
 
 - name: Install Consul
-  copy:
-    src: "{{ role_path }}/files/consul"
-    dest: "{{ consul_install_path }}/consul"
+  unarchive:
+#    src: "{{ role_path }}/files/consul"
+    src: "{{ consul_pkg }}"
+    dest: "{{ consul_install_path }}"
     owner: "{{ consul_owner }}"
     group: "{{ consul_group }}"
-    mode: 0755
+#    mode: 0755
   become: yes
   tags:
     - installation

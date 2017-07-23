@@ -55,6 +55,7 @@
       mode: 0755
     tags:
     - consul
+
   - name: configure consul
     template:
       src: "{{ item.src }}"
@@ -67,16 +68,17 @@
       - restart consul
     tags:
       - consul
+
   - name: Generate server config
     template:
       src: server.json.j2
       dest: /etc/consul/server.json
-      mode: 644
-    when: consul_is_server == yes
+      mode: u=rw,g=r,o=r
+    when: consul_is_server
     notify:
       - restart consul
     tags:
-      -consul
+      - consul
 
   - name: enable consul
     service:

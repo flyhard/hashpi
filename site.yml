@@ -7,6 +7,8 @@
   become_user: root
   roles:
     - utils
+    - shell
+    - ssh-key
     - { role: dnsmasq, consul_dns_domain: bramble.local, consul_dc: alpha }
   tags:
     - bramble
@@ -17,7 +19,7 @@
   gather_facts: true
   remote_user: pi
   roles:
-    - { role: consul, consul_is_server: yes, consul_dc: alpha, consul_bootstrap_expect: "{{ groups['baron'] | length }}", consul_ui_enabled: yes }
+    - { role: consul, consul_is_server: yes, consul_dc: alpha, consul_bootstrap_expect: "{{ groups['consul'] | length }}", consul_ui_enabled: yes }
   tags:
     - consul
     - consul-servers

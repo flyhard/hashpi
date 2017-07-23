@@ -5,6 +5,7 @@
   "node_name": "{{ ansible_hostname }}",
   "rejoin_after_leave": true,
   "domain": "{{ consul_dns_domain }}",
+  "client_addr": "0.0.0.0",
   "recursors" : [ "8.8.8.8" ],
 {% if consul_ui_enabled %}
   "ui": true,
