@@ -46,22 +46,12 @@
     - consul
   when: not consul_package.stat.exists | bool
 
-- name: Unarchive Consul package
-  local_action: unarchive src="{{ role_path }}/files/{{ consul_pkg }}" dest="{{ role_path }}/files/" creates="{{ role_path }}/files/consul"
-  become: no
-  run_once: true
-  tags:
-    - installation
-    - consul
-
 - name: Install Consul
   unarchive:
-#    src: "{{ role_path }}/files/consul"
     src: "{{ consul_pkg }}"
     dest: "{{ consul_install_path }}"
     owner: "{{ consul_owner }}"
     group: "{{ consul_group }}"
-#    mode: 0755
   become: yes
   tags:
     - installation
