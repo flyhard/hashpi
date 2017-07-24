@@ -47,31 +47,12 @@
   when: not vault_package.stat.exists | bool
 
 - name: Unarchive Vault package
-  local_action: unarchive src="{{ role_path }}/files/{{ vault_pkg }}" dest="{{ role_path }}/files/" creates="{{ role_path }}/files/vault"
-  become: no
-  run_once: true
-  tags:
-    - installation
-    - vault
-
-- name: Install Vault
-  copy:
-    src: "{{ role_path }}/files/vault"
-    dest: "{{ vault_install_path }}/vault"
+  unarchive:
+    src: "{{ vault_pkg }}"
+    dest: "{{ vault_install_path }}"
     owner: "{{ vault_owner }}"
     group: "{{ vault_group }}"
-    mode: 0755
   become: yes
   tags:
     - installation
     - vault
-
-- name: Cleanup
-  local_action: file path="{{ item }}" state="absent"
-  become: no
-  with_fileglob: "{{ role_path }}/files/vault"
-  run_once: true
-  tags:
-    - installation
-    - vault
-

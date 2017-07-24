@@ -48,33 +48,16 @@
   when: not nomad_package.stat.exists | bool
 
 - name: Unarchive Nomad package
-  local_action: unarchive src="{{ role_path }}/files/{{ nomad_pkg }}" dest="{{ role_path }}/files/" creates="{{ role_path }}/files/nomad"
-  become: no
-  run_once: true
-  tags:
-    - installation
-    - nomad
-
-- name: Install Nomad
-  copy:
-    src: "{{ role_path }}/files/nomad"
-    dest: "{{ nomad_install_path }}/nomad"
+  unarchive:
+    src: "{{ nomad_pkg }}"
+    dest: "{{ nomad_install_path }}"
     owner: "{{ nomad_owner }}"
     group: "{{ nomad_group }}"
-    mode: 0755
   become: yes
   tags:
     - installation
     - nomad
 
-- name: Cleanup
-  local_action: file path="{{ item }}" state="absent"
-  become: no
-  with_fileglob: "{{ role_path }}/files/nomad"
-  run_once: true
-  tags:
-    - installation
-    - nomad
 #######################################################
 #############  CONFIG   ###############################
 #######################################################
